@@ -1,0 +1,40 @@
+SELECT 
+  c.ContactKey,
+  c.Email,
+
+  /* Fuel engagement - clicks only */
+  COUNT(DISTINCT CASE WHEN j.EmailName LIKE '%fuel%' THEN cl.JobID END) AS FuelClicks,
+
+  /* Factoring engagement - clicks only */
+  COUNT(DISTINCT CASE WHEN j.EmailName LIKE '%factoring%' THEN cl.JobID END) AS FactoringClicks,
+
+  /* Score calculation - clicks only */
+  (COUNT(DISTINCT CASE WHEN j.EmailName LIKE '%fuel%' THEN cl.JobID END) * 5) AS FuelScore,
+  (COUNT(DISTINCT CASE WHEN j.EmailName LIKE '%factoring%' THEN cl.JobID END) * 5) AS FactoringScore,
+
+  /* Suggested track */
+  CASE
+    WHEN 
+      (COUNT(DISTINCT CASE WHEN j.EmailName LIKE '%fuel%' THEN cl.JobID END) * 5) >
+      (COUNT(DISTINCT CASE WHEN j.EmailName LIKE '%factoring%' THEN cl.JobID END) * 5)
+    THEN 'Fuel'
+
+    WHEN 
+      (COUNT(DISTINCT CASE WHEN j.EmailName LIKE '%factoring%' THEN cl.JobID END) * 5) >
+      (COUNT(DISTINCT CASE WHEN j.EmailName LIKE '%fuel%' THEN cl.JobID END) * 5)
+    THEN 'Factoring'
+
+    ELSE 'Unengaged'
+  END AS SuggestedTrack
+
+FROM ent.[RTS_Intro_Nurture_Complete] c
+LEFT JOIN _Sent s
+  ON s.SubscriberKey = c.ContactKey
+LEFT JOIN _Job j
+  ON j.JobID = s.JobID
+LEFT JOIN _Click cl
+  ON cl.SubscriberKey = c.ContactKey AND cl.JobID = s.JobID
+
+WHERE s.EventDate >= DATEADD(DAY, -45, GETDATE())
+
+GROUP BY c.ContactKey, c.Email
