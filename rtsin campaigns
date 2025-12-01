@@ -11,3 +11,22 @@ SELECT
 FROM RTSIN_Import c
 LEFT JOIN ent.all_imports_all_time cs
     ON c.Email = cs.Email
+
+10 plus trucks (RTSIN Policy expiration)
+
+SELECT
+    p.ContactKey, 
+    p.FirstName, 
+    p.LastName, 
+    p.Phone, 
+    c.RTS_Pro_User_Id__c, 
+    p.Email,
+    p.Number_Of_Trucks,
+    p.Policy_Expiration_Date
+FROM RTSIN_Processed p
+LEFT JOIN ent.Contact_Salesforce c
+    ON c.Id = p.ContactKey
+WHERE p.Number_Of_Trucks > '1'
+    AND p.Policy_Expiration_Date 
+        BETWEEN DATEADD(DAY, 84, CAST(GETDATE() AS DATE)) 
+            AND DATEADD(DAY, 90, CAST(GETDATE() AS DATE))
