@@ -1,0 +1,13 @@
+"SELECT DISTINCT 
+    c._ContactKey AS ContactKey, 
+    c.FirstName, 
+    c.Email, 
+    c.LastName, 
+    c.Phone
+FROM ent.Contact_Salesforce c
+INNER JOIN ent.Opportunity_Salesforce o
+    ON c.AccountId = o.AccountId
+WHERE
+    o.Opportunity_Type__c = 'Domestic Factoring'
+    AND o.StageName = 'Open'
+    AND c._ContactKey IS NOT NULL "
