@@ -1,0 +1,25 @@
+SELECT DISTINCT
+    cs._ContactKey AS ContactKey,
+    cs.FirstName,
+    cs.LastName,
+    cs.Email,
+    cs.Phone,
+    cs.RTS_Pro_User_Id__c,
+    sa.OwnerID
+FROM
+    ent.Contact_Salesforce cs
+INNER JOIN
+    ent.Account_Salesforce sa
+    ON cs.AccountID = sa.Id
+INNER JOIN
+    ent.Opportunity_Salesforce mo
+    ON cs.AccountID = mo.AccountId
+INNER JOIN 
+    ent.Cadence_Details__c_Salesforce cd
+    ON cs.AccountID = cd.Account__c
+WHERE
+    mo.Opportunity_Type__c = 'Domestic Factoring'
+    AND mo.StageName = 'Won'
+    AND cd.Balance__c BETWEEN 100000 AND 500000
+    AND cs._ContactKey IS NOT NULL
+    AND cs.Email IS NOT NULLEF_Prospecting_Sub_500K
