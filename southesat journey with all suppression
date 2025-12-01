@@ -1,0 +1,71 @@
+"SELECT 
+  a.ContactKey,
+  a.FirstName,
+  a.LastName,
+  a.Email,
+  a.Phone,
+  a.SourceDE
+FROM (
+
+  SELECT 
+    ContactKey,
+    FirstName,
+    LastName,
+    Email,
+    Phone,
+    'RTSF-CS_Kentucky' AS SourceDE
+  FROM ent.[RTSF-CS_Kentucky]
+
+  UNION ALL
+
+  SELECT 
+    ContactKey,
+    FirstName,
+    LastName,
+    Email,
+    Phone,
+    'RTSF-CS_Carolinas' AS SourceDE
+  FROM ent.[RTSF-CS_Carolinas]
+
+  UNION ALL
+
+  SELECT 
+    ContactKey,
+    FirstName,
+    LastName,
+    Email,
+    Phone,
+    'RTSF-CS_Atlanta-Carriers' AS SourceDE
+  FROM ent.[RTSF-CS_Atlanta-Carriers]
+
+  UNION ALL
+
+  SELECT 
+    ContactKey,
+    FirstName,
+    LastName,
+    Email,
+    Phone,
+    'RTSF_Nashville_Prospects' AS SourceDE
+  FROM ent.[RTSF_Nashville_Prospects]
+
+) a
+
+LEFT JOIN ent.GEN_Intro_Nurturing gin ON a.ContactKey = gin.ContactKey
+LEFT JOIN ent.Digital_Onboarding_FMCSA dof ON a.ContactKey = dof.ContactKey
+LEFT JOIN ent.RTSF_All_Factoring raf ON a.ContactKey = raf.ContactKey
+LEFT JOIN ent.RTSCS_Mixed_Fleet mf ON a.ContactKey = mf.ContactKey
+LEFT JOIN ent.[RTSCS_Fleet-One] fo ON a.ContactKey = fo.ContactKey
+LEFT JOIN ent.[RTSCS_Titan-Fuel-Card] tfc ON a.ContactKey = tfc.ContactKey
+LEFT JOIN ent.[RTSCS_Onboarding_Self-Funded] osf ON a.ContactKey = osf.ContactKey
+LEFT JOIN ent.DO_Abandoned doa ON a.ContactKey = doa.ContactKey
+
+WHERE
+  gin.ContactKey IS NULL
+  AND dof.ContactKey IS NULL
+  AND raf.ContactKey IS NULL
+  AND mf.ContactKey IS NULL
+  AND fo.ContactKey IS NULL
+  AND tfc.ContactKey IS NULL
+  AND osf.ContactKey IS NULL
+  AND doa.ContactKey IS NULL"
