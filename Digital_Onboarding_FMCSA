@@ -1,0 +1,30 @@
+SELECT DISTINCT
+    l._ContactKey AS ContactKey, 
+    l.Email, 
+    l.FirstName, 
+    l.LastName, 
+    l.Company,
+    do.primary_applicant AS RTS_Pro_User_Id__c,
+    l.Phone,
+    l.CreatedDate,
+    l.Number_Of_Trucks__c,
+    l.LeadSource
+FROM ent.Lead_Salesforce l
+LEFT JOIN ent.[RTSF Digital Onboarding] do
+    ON l._ContactKey = do.contact_key
+    AND do.status IN ('inProgress', 'submitted')
+LEFT JOIN ent.RTSF_All_Factoring af
+    ON af.ContactKey = l._ContactKey
+LEFT JOIN ent.RTSF_Open_Opps oo
+    ON oo.ContactKey = l._ContactKey
+LEFT JOIN ent.RTSF_All_Factoring_Opps_DONOTWORK donot
+    ON donot.ContactKey = l._ContactKey
+WHERE 
+    l.LeadSource = 'FMCSA'
+    AND l.CreatedDate > '2024-01-01'
+    AND l.Number_Of_Trucks__c IN ('0', '1', '2', '3')
+    AND l._ContactKey IS NOT NULL
+    AND do.contact_key IS NULL
+    AND af.ContactKey IS NULL
+    AND oo.ContactKey IS NULL
+    AND donot.ContactKey IS NULL
