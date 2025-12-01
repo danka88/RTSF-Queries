@@ -1,0 +1,13 @@
+SELECT
+    c.FirstName,
+    c.LastName,
+    c.Email,
+    c.Phone,
+    c.Number_Of_Trucks,
+    c.Policy_Expiration_Date,
+    c.EffectiveDate,
+    c.Company,
+    COALESCE(cs.ContactKey, 'mc:' + c.Email) AS ContactKey
+FROM RTSIN_Import c
+LEFT JOIN ent.all_imports_all_time cs
+    ON c.Email = cs.Email
